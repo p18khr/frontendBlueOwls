@@ -20,7 +20,7 @@ export default function Navbar() {
         <Link className="nav-link active" to="/" >Home</Link>
       </li>
       <li>
-        <Link className="nav-link active" to="/add">Add Patient</Link>
+        <Link className="nav-link active" to="/add">Create Appointment</Link>
       </li>
       <li>
         <Link className="nav-link active" to="/">Patient List</Link>
