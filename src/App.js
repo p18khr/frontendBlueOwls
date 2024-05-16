@@ -3,6 +3,7 @@ import AddPatient from "./components/AddPatient";
 import Navbar from "./components/Navbar";
 import PatientList from "./components/PatientList";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Payment from "./components/Payment";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<PatientList />}></Route>
           <Route exact path="/add" element={<AddPatient />}></Route>
+          <Route exact path="/pay" element={<Payment/>}></Route>
         </Routes>
       </div>
     </Router>
