@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import Payment from "./Payment";
-import { Button, Modal } from "react-bootstrap";
 
 export default function AddPatient() {
   const [appointment, setAppointment] = useState({
@@ -19,6 +17,7 @@ export default function AddPatient() {
   const [showForm, setShowForm] = useState(false);
   const [showPay, setShowPay] = useState(true);
 
+ 
   const handleForm = () => setShowForm(true);
   const handlePay = () => setShowPay(false);
 
@@ -31,7 +30,6 @@ export default function AddPatient() {
       time: hours + ":" + mins,
     }));
 
-    //todo: get the hours and minutes from the input value and store them in separate variables
   }
 
 
@@ -44,16 +42,17 @@ export default function AddPatient() {
     
   }
 
-  const submitAppointment = async () => {
+  const submitAppointment = async (id, name, email, phone, age, date, time) => {
     await fetch(`http://localhost:8081/patient`, {
       method: "POST",
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(appointment),
+      body: JSON.stringify({ id, name, email, phone, age, date, time }),
     });
   };
+
 
   const [amount, setAmount] = useState(400);
 
@@ -99,7 +98,7 @@ export default function AddPatient() {
           "Payment Successful! Payment id: " + response.razorpay_payment_id
         );
 
-        submitAppointment();
+        submitAppointment(appointment.id, appointment.name, appointment.email, appointment.phone, appointment.age, appointment.date, appointment.time);
         navigate("/");
       },
       prefill: {
@@ -111,19 +110,6 @@ export default function AddPatient() {
     paymentObject.open();
   };
 
-
-//   const submit = async () => {
-    
-//     await fetch(`http://localhost:8081/patient`, {
-//       method: "POST",
-//       mode: "cors",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(appointment),
-//     });
-  
-// };
 
   useEffect(()=>{
     
