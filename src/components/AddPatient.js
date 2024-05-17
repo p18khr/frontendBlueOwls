@@ -6,6 +6,7 @@ import Payment from "./Payment";
 
 export default function AddPatient() {
   const [appointment, setAppointment] = useState({
+    id: Math.floor(Math.random() * 10001),
     name: "",
     email: "",
     phone: "",
@@ -28,12 +29,24 @@ export default function AddPatient() {
   const navigate = useNavigate();
   function handleSubmit(){
     if(appointment.date !== "" && appointment.name !== "" && appointment.email !== ""  && appointment.time !== ""  && appointment.phone !== "" && appointment.age !== "" ){
-      <Payment appt={appointment}/>
-      navigate("/pay");
+      submit();
       
     }
     
   }
+
+  const submit = async () => {
+    
+    await fetch(`http://localhost:8081/patient`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(appointment),
+    });
+  
+};
 
   useEffect(()=>{
     

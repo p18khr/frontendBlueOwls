@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Payment(appt) {
+export default function Payment(props) {
+  const {appt} = props;
   const [amount, setAmount] = useState(400);
 
   const navigate = useNavigate();

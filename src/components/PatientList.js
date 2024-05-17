@@ -23,7 +23,7 @@ export default function PatientList() {
 
   useEffect(()=>{
     getPatientsList();
-  })
+  },[getPatientsList,patients])
   
   return (
     <div className="container my-5">
@@ -35,7 +35,7 @@ export default function PatientList() {
       </div>
       <Row xs={1} md={1}>
         {patients.map((idx)=>(
-          <Col>
+          <Col key>
           <div className="card text-center my-5">
             <div
               className="btn btn-primary"
