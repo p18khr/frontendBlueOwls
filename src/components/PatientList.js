@@ -35,7 +35,7 @@ export default function PatientList() {
       </div>
       <Row xs={1} md={1}>
         {patients.map((idx)=>(
-          <Col key>
+          <Col key={idx.id}>
           <div className="card text-center my-5">
             <div
               className="btn btn-primary"
@@ -44,7 +44,7 @@ export default function PatientList() {
                 borderBottomRightRadius: "0",
               }}
             >
-              Patient Name: {idx.name}
+              Patient Name: {idx.name}<br/>id:&nbsp;{idx.id}
             </div>
             <div
               className="card-body"
@@ -56,7 +56,7 @@ export default function PatientList() {
           </div>
         </Col>
         ))}
-        
+        <div hidden={patients.length !== 0}>No Patients to show</div>
       </Row>
 
      

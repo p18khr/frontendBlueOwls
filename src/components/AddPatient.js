@@ -3,6 +3,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import Payment from "./Payment";
+import { Button, Modal } from "react-bootstrap";
 
 export default function AddPatient() {
   const [appointment, setAppointment] = useState({
@@ -15,6 +16,13 @@ export default function AddPatient() {
     time: "",
   });
 
+  const [showForm, setShowForm] = useState(false);
+  const [showPay, setShowPay] = useState(true);
+
+  const handleForm = () => setShowForm(true);
+  const handlePay = () => setShowPay(false);
+
+
   function timePassed(time) {
     let [hours, mins] = time.split(":");
 
@@ -26,17 +34,17 @@ export default function AddPatient() {
     //todo: get the hours and minutes from the input value and store them in separate variables
   }
 
-  const navigate = useNavigate();
-  function handleSubmit(){
-    if(appointment.date !== "" && appointment.name !== "" && appointment.email !== ""  && appointment.time !== ""  && appointment.phone !== "" && appointment.age !== "" ){
-      submit();
-      
+
+  function handleSubmit(event){
+    if(appointment.date !== "" && appointment.name !== "" && appointment.email !== ""  && appointment.time !== ""  && appointment.phone !== "" && appointment.age !== ""){
+      handleForm();
+      handlePay();
+      event.preventDefault();
     }
     
   }
 
-  const submit = async () => {
-    
+  const submitAppointment = async () => {
     await fetch(`http://localhost:8081/patient`, {
       method: "POST",
       mode: "cors",
@@ -45,15 +53,86 @@ export default function AddPatient() {
       },
       body: JSON.stringify(appointment),
     });
+  };
+
+  const [amount, setAmount] = useState(400);
+
+  const navigate = useNavigate();
+
+  const loadScript = (src) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+
+      script.onload = () => {
+        resolve(true);
+      };
+
+      script.onerror = () => {
+        resolve(false);
+      };
+
+      document.body.appendChild(script);
+    });
+  };
+
+  const initiatePayment = async () => {
+    const res = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+
+    if (!res) {
+      alert("You are offline!... Failed to load Razorpay gateway");
+    }
+
+    const options = {
+      key: "rzp_test_JjfSzaMNrb19Ek",
+      currency: "INR",
+      amount: amount * 100,
+      name: "Prakhar Punj Shrivastava",
+      description: "Payment for GoJunglee.com",
+      image:
+        "https://mern-blog-akky.herokuapp.com/static/media/logo.8c649bfa.png",
+
+      handler: function (response) {
+        alert(
+          "Payment Successful! Payment id: " + response.razorpay_payment_id
+        );
+
+        submitAppointment();
+        navigate("/");
+      },
+      prefill: {
+        name: "Prakhar",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+  };
+
+
+//   const submit = async () => {
+    
+//     await fetch(`http://localhost:8081/patient`, {
+//       method: "POST",
+//       mode: "cors",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(appointment),
+//     });
   
-};
+// };
 
   useEffect(()=>{
     
   },[appointment])
 
   return (
+
     <div className="container my-5">
+      <div hidden={showForm}>
       <div
         style={{ fontWeight: "bold", fontSize: "30px", textAlign: "center" }}
       >
@@ -171,6 +250,34 @@ export default function AddPatient() {
           </button>
         </div>
       </form>
+      </div>
+      
+      <div className=" my-5" hidden={showPay}>
+      <div style={{ fontWeight: "bold" }}>Kindly make payment to book an appointment:</div>
+      <br />
+      <br />
+      <input
+        type="number"
+        onChange={(e) => {
+          setAmount(e.target.value);
+        }}
+        disabled
+        value={400}
+      />
+      <br />
+      <br />
+      <button
+        disabled={amount < 1 || amount === null}
+        className="btn btn-primary"
+        onClick={initiatePayment}
+      >
+        Pay {amount}
+      </button>
     </div>
+    </div>
+
+
   );
+
+  
 }
