@@ -1,3 +1,8 @@
+# "npm install" will install all the necessary modules under the node_modules
+# "npm start" runs the project
+# "npm i react-boostrap", "npm i react-router-dom", "npm i react-datepicker" will help you to run the project smoothly
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
