@@ -4,21 +4,18 @@ import { Row, Col, Button, Modal } from "react-bootstrap";
 export default function PatientList() {
   const [show, setShow] = useState(false);
   const [patients, setPatients] = useState([]);
-  const [filteredPatients,setFilteredPatients] = useState([]);
-  
-
+  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState(null);
 
   const handleClose = () => setShow(false);
 
-  const handleShow = async () => {
+  const handleShow = (patient) => {
+    setSelectedPatient(patient);
     setShow(true);
   };
 
-  
-
- 
   const getPatientsList = async () => {
-    {
+    try {
       const response = await fetch(`http://localhost:8081/patient`, {
         method: "GET",
         mode: "cors",
@@ -29,14 +26,15 @@ export default function PatientList() {
       const json = await response.json();
       setPatients(json);
       setFilteredPatients(json);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
     }
   };
 
   const filterPatientsByName = (event) => {
-    const filter =  patients.filter(patient => 
+    const filter = patients.filter((patient) =>
       patient.name.toLowerCase().includes(event.target.value.toLowerCase())
     );
-    console.log(event.target.value);
     setFilteredPatients(filter);
   };
 
@@ -47,11 +45,9 @@ export default function PatientList() {
   return (
     <div className="container my-5">
       <div className="container my-5">
-        <input type="text" onChange={filterPatientsByName} />
+        <input type="text" onChange={filterPatientsByName} placeholder="Search by name" />
       </div>
-      <div
-        style={{ fontWeight: "bold", fontSize: "30px", textAlign: "center" }}
-      >
+      <div style={{ fontWeight: "bold", fontSize: "30px", textAlign: "center" }}>
         Patient List
       </div>
       <Row xs={1} md={1}>
@@ -69,10 +65,7 @@ export default function PatientList() {
                 <br />
                 id:&nbsp;{patient.id}
               </div>
-              <div
-                className="card-body"
-                style={{ height: "120px", overflow: "hidden" }}
-              >
+              <div className="card-body" style={{ height: "120px", overflow: "hidden" }}>
                 <div>Age : {patient.age} </div>
                 <div>Mobile Number : {patient.phone}</div>
               </div>
@@ -80,48 +73,40 @@ export default function PatientList() {
                 variant="primary"
                 style={{ color: "black" }}
                 className="card-footer"
-                onClick={() => handleShow(patient.id)} 
+                onClick={() => handleShow(patient)}
               >
                 See Appointments
               </Button>
             </div>
-            <Modal
-              show={show}
-              onHide={handleClose}
-              backdrop="static"
-              keyboard={false}
-            >
-              <Modal.Header>
-                <Modal.Title>Appointment Details</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                {patient.appointments.map((app) => (
-                  <div>
-                    <div key={app.id}>
-                      Appointment Id:&nbsp;{app.id}
-                    </div>
-                    <div key={app.date}>
-                      Appointment Date:&nbsp;{app.date.slice(0, 10)}
-                    </div>
-                    <div key={app.time}>
-                      Appointment Time:&nbsp;{app.time}
-                    </div>
-                    <div key={app.fee}>
-                      Fee (paid):&nbsp;&#8377;{app.fee}
-                    </div>
-                  </div>
-                ))}
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
           </Col>
         ))}
         <div hidden={patients.length !== 0}>No Patients to show</div>
       </Row>
+
+      <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+        <Modal.Header>
+          <Modal.Title>Appointment Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedPatient && selectedPatient.appointments && selectedPatient.appointments.length > 0 ? (
+            selectedPatient.appointments.map((app) => (
+              <div key={app.id}>
+                <div>Appointment Id:&nbsp;{app.id}</div>
+                <div>Appointment Date:&nbsp;{app.date.slice(0, 10)}</div>
+                <div>Appointment Time:&nbsp;{app.time}</div>
+                <div>Fee (paid):&nbsp;&#8377;{app.fee}</div>
+              </div>
+            ))
+          ) : (
+            <div>No appointments available.</div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
