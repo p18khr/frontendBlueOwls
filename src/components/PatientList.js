@@ -35,7 +35,6 @@ export default function PatientList() {
   const filterPatientsByName = (event) => {
     const filter =  patients.filter(patient => 
       patient.name.toLowerCase().includes(event.target.value.toLowerCase())
-      
     );
     console.log(event.target.value);
     setFilteredPatients(filter);
@@ -92,11 +91,11 @@ export default function PatientList() {
               backdrop="static"
               keyboard={false}
             >
-              <Modal.Header closeButton>
+              <Modal.Header>
                 <Modal.Title>Appointment Details</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                {patient.appointments.map((app, index) => (
+                {patient.appointments.map((app) => (
                   <div>
                     <div key={app.id}>
                       Appointment Id:&nbsp;{app.id}
